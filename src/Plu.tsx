@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react'
+import { ReactNode, useState, useRef } from 'react'
 import { Input, Button, FormControl, FormErrorMessage,
   VStack, HStack, Box, Heading, Text, useToast, Grid, GridItem, CSSObject } from '@chakra-ui/react'
 import axios from 'axios'
@@ -15,6 +15,7 @@ const nf = new Intl.NumberFormat('id')
 
 function PluPage() {
   const [item, setItem] = useState<ItemType>()
+  const txtCodeRef = useRef<HTMLInputElement>(null)
   const toast = useToast()
 
   return (
@@ -22,7 +23,7 @@ function PluPage() {
       <Box as="header">
         <Heading>Cek Harga</Heading>
       </Box>
-      <main>
+      <Box as="main" w="100%" px={8}>
         <Formik
           initialValues={{ code: '' }}
           validationSchema={PluSchema}
@@ -44,17 +45,21 @@ function PluPage() {
               }
             } finally {
               setSubmitting(true)
+              if (!!txtCodeRef.current) {
+                txtCodeRef.current.focus()
+                txtCodeRef.current.select()
+              }
             }
           }}
         >
           {({ isSubmitting }) => (
             <Form>
-              <HStack spacing={8} align="start">
+              <HStack spacing={1} align="start">
                 <Field name="code">
                   {({ field, meta }: FieldProps<string>) => (
                     <FormControl isRequired>
                       {/* <FormLabel htmlFor="txtCode">Barcode</FormLabel> */}
-                      <Input id="txtCode" {...field}/>
+                      <Input id="txtCode" ref={txtCodeRef} {...field}/>
                       {meta.touched && !!meta.error && (
                         <FormErrorMessage className="errors">{meta.error}</FormErrorMessage>
                       )}
@@ -69,7 +74,7 @@ function PluPage() {
 
         {!!item && <ItemView2 item={item}/>}
 
-      </main>
+      </Box>
     </VStack>
   )
 }
@@ -121,7 +126,7 @@ const ItemView = ({ item }: {
 const ItemView2 = ({ item }: {
   item: ItemType
 }) => (
-  <Grid templateColumns="repeat(2, 1fr)" columnGap={2} rowGap={4}>
+  <Grid templateColumns="repeat(2, 1fr)" columnGap={2} rowGap={3} marginTop={3}>
     <GridItem>
       <LabelValue label="Kode" value={item.Kode}/>
     </GridItem>
@@ -134,7 +139,9 @@ const ItemView2 = ({ item }: {
     <GridItem colSpan={2}>
       <LabelValue label="Harga" value={(
         <Text fontSize="xx-large">
-          <del>{nf.format(item.HargaNormal)}</del>
+          <Text as="span" textColor="red.200">
+            <del>{nf.format(item.HargaNormal)}</del>
+          </Text>
           {' '}
           {nf.format(item.HargaJual)}
         </Text>
