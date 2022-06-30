@@ -10,9 +10,11 @@ app = FastAPI(
 
 app.include_router(item.router)
 
+
 @app.get('/')
 async def index() -> str:
     return get_program_name()
+
 
 @app.get('/info')
 async def index() -> str:

@@ -9,6 +9,7 @@ class_mapping: Dict[Optional[str], Dict[str, str]] = {
     None: {
         'mitem': 'Item',
         'mitemtree': 'ItemTree',
+        'mitemhargagrosir': 'ItemHargaGrosir',
         'titemhargah': 'ItemHarga',
         'titemhargad': 'ItemHargaD',
     },

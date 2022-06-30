@@ -2,7 +2,7 @@
 
 import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 
 
 convention = {
@@ -30,8 +30,8 @@ class ItemHarga(Base):
     UpdateUser = sa.Column(sa.String(16))
     UpdateTime = sa.Column(sa.DateTime)
 
-    sa.Index('Idx_Tanggal', 'TanggalAwal', 'TanggalAkhir')
     sa.UniqueConstraint('Kode', name='Idx_Kode')
+    sa.Index('Idx_Tanggal', 'TanggalAwal', 'TanggalAkhir')
 
 
 class ItemTree(Base):
@@ -43,6 +43,7 @@ class ItemTree(Base):
     Nama = sa.Column(sa.String(50), nullable=False)
     FullPath = sa.Column(sa.String(255), nullable=False)
     marginlabapersen = sa.Column(sa.Float)
+    # IDCoa = sa.Column(sa.Integer, sa.ForeignKey('mcoa.IDCOA', onupdate='CASCADE'))
     TipeKategori = sa.Column(sa.Enum('Obral', 'Normal'), server_default='Normal')
     Keterangan = sa.Column(sa.Text)
     Selectable = sa.Column(sa.Enum('Ya', 'Tidak'), nullable=False, server_default='Ya')
@@ -103,9 +104,25 @@ class Item(Base):
     RefID = sa.Column(sa.Integer)
     Lokasi = sa.Column(sa.String(30))
 
+    sa.Index('Idx_Kode', 'Kode')
     sa.Index('Idx_RefIDItem', 'RefID')
     sa.Index('Idx_UrutanProduksi', 'UrutanProduksi')
-    sa.Index('Idx_Kode', 'Kode')
+
+    ItemTree = relationship('ItemTree', backref='Items')
+
+
+class ItemHargaGrosir(Base):
+    __tablename__ = 'mitemhargagrosir'
+
+    IDItemHargaGrosir = sa.Column(sa.Integer, primary_key=True)
+    IDItem = sa.Column(sa.Integer, sa.ForeignKey('mitem.IDItem', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    Jumlah = sa.Column(sa.Float, nullable=False, server_default='0')
+    Harga = sa.Column(sa.Float, nullable=False, server_default='0')
+    IsDos = sa.Column(sa.Enum('Ya', 'Tidak'), nullable=False, server_default='Tidak')
+    IsTampilPrint = sa.Column(sa.Enum('Ya', 'Tidak'), server_default='Ya')
+    Aktif = sa.Column(sa.Enum('Ya', 'Tidak'), nullable=False, server_default='Ya')
+
+    Item = relationship('Item', backref='ItemHargaGrosirs')
 
 
 class ItemHargaD(Base):
@@ -118,3 +135,6 @@ class ItemHargaD(Base):
     DiskonPersen = sa.Column(sa.Float, nullable=False, server_default='0')
     Diskon = sa.Column(sa.Float, server_default='0')
     Aktif = sa.Column(sa.Enum('Ya', 'Tidak'), nullable=False, server_default='Ya')
+
+    ItemHarga = relationship('ItemHarga', backref='ItemHargaDs')
+    Item = relationship('Item', backref='ItemHargaDs')
