@@ -5,3 +5,4 @@ pymysql
 cryptography
 python-dotenv
 rich
+'strawberry-graphql[fastapi]'

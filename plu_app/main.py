@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from .version import get_version, get_program_name
-from .routers import item
+from .routers import item, graphql
+
 
 app = FastAPI(
     title="PLU App",
@@ -9,6 +10,7 @@ app = FastAPI(
 )
 
 app.include_router(item.router)
+app.include_router(graphql.router, prefix="/graphql")
 
 
 @app.get('/')
