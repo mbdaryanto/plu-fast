@@ -107,13 +107,10 @@ class Query():
         session: Session = info.context['session']
         item: Optional[Item] = session.execute(
             select(Item).where(
-                and_(
-                    Item.Aktif == 'Ya',
-                    or_(
-                        Item.Kode == barcode,
-                        Item.Barcode == barcode,
-                    ),
-                )
+                or_(
+                    Item.Kode == barcode,
+                    Item.Barcode == barcode,
+                ),
             ).order_by(
                 # diprioritaskan yang barcode-nya sama
                 desc(Item.Barcode == barcode)
@@ -128,6 +125,34 @@ class Query():
         if item.Aktif == 'Tidak':
             raise ValueError(
                 "Barang dengan kode/barcode {!r} tidak aktif".format(barcode)
+            )
+
+        return ItemType(
+            id=strawberry.ID(str(item.IDItem)),
+            code=item.Kode,
+            barcode=item.Barcode,
+            name=item.Nama,
+            normal_price=item.HargaNormal,
+            discounted_price=item.HargaJual,
+        )
+
+    @strawberry.field
+    def item(self, id: strawberry.ID, info: Info) -> ItemType:
+        session: Session = info.context['session']
+        item: Optional[Item] = session.execute(
+            select(Item).where(
+                Item.IDItem == int(id),
+            )
+        ).scalar_one_or_none()
+
+        if item is None:
+            raise ValueError(
+                "Item with id {!r} not found".format(id)
+            )
+
+        if item.Aktif == 'Tidak':
+            raise ValueError(
+                "Item with id {!r} is inactive".format(id)
             )
 
         return ItemType(
