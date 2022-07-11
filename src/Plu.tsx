@@ -1,10 +1,12 @@
 import { ReactNode, useState, useRef, Fragment, ComponentProps } from 'react'
 import { Input, Button, FormControl, FormErrorMessage, Grid, GridItem, Center,
-  VStack, HStack, Box, Heading, Text, useToast } from '@chakra-ui/react'
+  VStack, HStack, Box, Heading, Text, useToast, CircularProgress } from '@chakra-ui/react'
 import axios from 'axios'
 import { Formik, Form, Field, FieldProps } from 'formik'
 import { PluSchema, getItem, PluResponseType } from './item'
 import { FaBox } from 'react-icons/fa'
+import LabelValue from './components/LabelValue'
+import PluGraphql from './PluGraphql'
 
 
 interface ErrorResponse {
@@ -30,7 +32,8 @@ const promoTheme = {
 }
 
 function PluPage() {
-  const [plu, setPlu] = useState<PluResponseType>()
+  const [barcode, setBarcode] = useState('')
+  // const [plu, setPlu] = useState<PluResponseType>()
   const txtCodeRef = useRef<HTMLInputElement>(null)
   const toast = useToast()
 
@@ -45,28 +48,29 @@ function PluPage() {
             initialValues={{ code: '' }}
             validationSchema={PluSchema}
             onSubmit={async (values, { setSubmitting }) => {
-              try {
-                const item = await getItem({ axios, code: values.code })
-                setPlu(item)
-              } catch (ex) {
-                if (axios.isAxiosError(ex)) {
-                  console.log('Axios Error', ex.response!.data)
-                  const errorResponse = ex.response!.data as ErrorResponse
-                  toast({
-                    title: 'Kesalahan',
-                    status: 'error',
-                    description: errorResponse.detail
-                  })
-                } else {
-                  console.log('Unknown Error', ex)
-                }
-              } finally {
-                setSubmitting(true)
-                if (!!txtCodeRef.current) {
-                  txtCodeRef.current.focus()
-                  txtCodeRef.current.select()
-                }
-              }
+              setBarcode(values.code)
+              // try {
+              //   const item = await getItem({ axios, code: values.code })
+              //   setPlu(item)
+              // } catch (ex) {
+              //   if (axios.isAxiosError(ex)) {
+              //     console.log('Axios Error', ex.response!.data)
+              //     const errorResponse = ex.response!.data as ErrorResponse
+              //     toast({
+              //       title: 'Kesalahan',
+              //       status: 'error',
+              //       description: errorResponse.detail
+              //     })
+              //   } else {
+              //     console.log('Unknown Error', ex)
+              //   }
+              // } finally {
+              //   setSubmitting(true)
+              //   if (!!txtCodeRef.current) {
+              //     txtCodeRef.current.focus()
+              //     txtCodeRef.current.select()
+              //   }
+              // }
             }}
           >
             {({ isSubmitting }) => (
@@ -89,7 +93,8 @@ function PluPage() {
             )}
           </Formik>
 
-          {!!plu && <PluView plu={plu}/>}
+          {!!barcode && <PluGraphql barcode={barcode}/>}
+          {/* {!!plu && <PluView plu={plu}/>} */}
 
         </Box>
       </VStack>
@@ -216,26 +221,6 @@ const PluView = ({ plu }: {
         ))}
       </Grid>
     )}
-  </VStack>
-)
-
-const LabelValue = ({ label, value, fontSize, textAlign, labeltextColor,valueBgColor }: {
-  label: string
-  value: ReactNode
-  fontSize?: ComponentProps<typeof Text>['fontSize']
-  textAlign?: ComponentProps<typeof Text>['textAlign']
-  labeltextColor?: ComponentProps<typeof Text>['textColor']
-  valueBgColor?: ComponentProps<typeof Box>['bgColor']
-}) => (
-  <VStack align="left" spacing="0">
-    <Text fontSize="sm" textColor={labeltextColor ?? "green.800"}>
-      {label}
-    </Text>
-    <Box w="100%" bgColor={valueBgColor ?? "green.100"} borderRadius="4px" p={2}>
-      <Text fontSize={fontSize ?? 'lg'} textAlign={textAlign}>
-        {value}
-      </Text>
-    </Box>
   </VStack>
 )
 
