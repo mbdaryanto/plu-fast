@@ -1,10 +1,29 @@
-from typing import Optional
+from datetime import date
+from typing import Optional, List
 import strawberry
 from strawberry.types import Info
 from sqlalchemy import select, desc, and_, or_
 
 from ..db import Session
-from ..schema import Item
+from ..schema import Item, ItemHarga, ItemHargaD, ItemHargaGrosir
+
+
+@strawberry.type
+class BulkPrice:
+    id: strawberry.ID
+    quantity: int
+    unit_price: float
+
+
+@strawberry.type
+class PromoPrice:
+    id: strawberry.ID
+    promo_code: str
+    start: date
+    end: date
+    discount_percent: float
+    discount: float
+    unit_price: float
 
 
 @strawberry.type(name='Item')
@@ -13,15 +32,78 @@ class ItemType:
     code: str
     barcode: Optional[str]
     name: str
-    normal_price: str
-    discounted_price: str
+    normal_price: float
+    discounted_price: float
+
+    @strawberry.field
+    def bulk_prices(self, info: Info) -> List[BulkPrice]:
+        item_id = int(self.id)
+        session: Session = info.context['session']
+        rows: List[ItemHargaGrosir] = session.execute(
+            select(ItemHargaGrosir).where(
+                and_(
+                    ItemHargaGrosir.IDItem == item_id,
+                    ItemHargaGrosir.Aktif == 'Ya',
+                )
+            ).order_by(
+                ItemHargaGrosir.Jumlah
+            )
+        ).scalars().all()
+
+        return [
+            BulkPrice(
+                id=strawberry.ID(row.IDItemHargaGrosir),
+                quantity=int(row.Jumlah),
+                unit_price=row.Harga,
+            )
+            for row in rows
+        ]
+
+    @strawberry.field
+    def promo_prices(self, info: Info) -> List[PromoPrice]:
+        item_id = int(self.id)
+        session: Session = info.context['session']
+        rows = session.execute(
+            select(
+                ItemHargaD.IDItemHargaD,
+                ItemHarga.Kode,
+                ItemHarga.TanggalAwal,
+                ItemHarga.TanggalAkhir,
+                ItemHargaD.DiskonPersen,
+                ItemHargaD.Diskon,
+                ItemHargaD.HargaJual,
+            ).join_from(
+                ItemHarga,
+                ItemHargaD,
+                ItemHarga.IDItemHargaH == ItemHargaD.IDItemHargaH,
+            ).where(
+                and_(
+                    ItemHargaD.IDItem == item_id,
+                    ItemHarga.Aktif == 'Ya',
+                    ItemHarga.TanggalAwal <= date.today(),
+                    ItemHarga.TanggalAkhir >= date.today(),
+                )
+            )
+        ).all()
+
+        return [
+            PromoPrice(
+                id=strawberry.ID(row.IDItemHargaD),
+                promo_code=row.Kode,
+                start=row.TanggalAwal,
+                end=row.TanggalAkhir,
+                discount_percent=row.DiskonPersen,
+                discount=row.Diskon,
+                unit_price=row.HargaJual,
+            )
+            for row in rows
+        ]
 
 
 @strawberry.type
 class Query():
     @strawberry.field
     def plu(self, barcode: str, info: Info) -> ItemType:
-
         session: Session = info.context['session']
         item: Optional[Item] = session.execute(
             select(Item).where(
