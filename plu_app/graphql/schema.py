@@ -19,6 +19,7 @@ class BulkPrice:
 class PromoPrice:
     id: strawberry.ID
     promo_code: str
+    promo_name: str
     start: date
     end: date
     discount_percent: float
@@ -67,6 +68,7 @@ class ItemType:
             select(
                 ItemHargaD.IDItemHargaD,
                 ItemHarga.Kode,
+                ItemHarga.Nama,
                 ItemHarga.TanggalAwal,
                 ItemHarga.TanggalAkhir,
                 ItemHargaD.DiskonPersen,
@@ -90,6 +92,7 @@ class ItemType:
             PromoPrice(
                 id=strawberry.ID(row.IDItemHargaD),
                 promo_code=row.Kode,
+                promo_name=row.Nama,
                 start=row.TanggalAwal,
                 end=row.TanggalAkhir,
                 discount_percent=row.DiskonPersen,

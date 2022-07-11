@@ -80,7 +80,7 @@ function PluPage() {
                     {({ field, meta }: FieldProps<string>) => (
                       <FormControl isRequired>
                         {/* <FormLabel htmlFor="txtCode">Barcode</FormLabel> */}
-                        <Input id="txtCode" ref={txtCodeRef} {...field}/>
+                        <Input id="txtCode" ref={txtCodeRef} {...field} autoFocus/>
                         {meta.touched && !!meta.error && (
                           <FormErrorMessage className="errors">{meta.error}</FormErrorMessage>
                         )}

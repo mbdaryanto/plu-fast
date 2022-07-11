@@ -22,6 +22,7 @@ const GET_PLU = gql`
       promoPrices {
         id
         promoCode
+        promoName
         start
         end
         discountPercent
@@ -45,6 +46,7 @@ interface BulkPriceType {
 interface PromoPriceType {
   id: string
   promoCode: string
+  promoName: string
   start: string
   end: string
   discountPercent: number
@@ -97,17 +99,17 @@ function PluGraphql({ barcode }: {
     </Center>
   )
 
-  if (error) {
+  if (error) return (
     <Center w="100%" minH="200px">
       <Text>Error {error.message}</Text>
     </Center>
-  }
+  )
 
-  if (!data || !data?.plu) {
+  if (!data) return (
     <Center w="100%" minH="200px">
       <Text>Enter barcode</Text>
     </Center>
-  }
+  )
 
   return (
     <VStack w="100%" marginTop={3} spacing={3}>
@@ -164,7 +166,7 @@ function PluGraphql({ barcode }: {
           {data!.plu.promoPrices.map((row) => (
             <Fragment key={row.id}>
               <GridItem>
-                <LabelValue label="Promo" value={row.promoCode} {...promoTheme}/>
+                <LabelValue label="Promo" value={row.promoName} {...promoTheme}/>
               </GridItem>
               <GridItem>
                 <LabelValue label="Kode" value={row.promoCode} {...promoTheme}/>
