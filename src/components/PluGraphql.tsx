@@ -1,7 +1,7 @@
 import { gql, useQuery } from '@apollo/client'
 import { Center, CircularProgress, Grid, GridItem, Text, VStack } from '@chakra-ui/react'
 import { Fragment } from 'react'
-import LabelValue from './components/LabelValue'
+import LabelValue from './LabelValue'
 
 
 const nf = new Intl.NumberFormat('id')
