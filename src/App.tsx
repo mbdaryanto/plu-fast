@@ -5,9 +5,9 @@ import Plu from './Plu'
 
 const client = new ApolloClient({
   uri: () => {
-    // const url = new URL('/', window.location.href)
-    // return url.href
-    return 'http://localhost:8000/graphql'
+    const url = new URL('/graphql', window.location.href)
+    return url.href
+    // return 'http://localhost:8000/graphql'
   },
   cache: new InMemoryCache(),
 })
