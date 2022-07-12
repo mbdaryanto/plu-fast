@@ -8,14 +8,14 @@ from ..db import Session
 from ..schema import Item, ItemHarga, ItemHargaD, ItemHargaGrosir
 
 
-@strawberry.type
+@strawberry.type(description='Bulk Price is the unit price on item with quantity')
 class BulkPrice:
     id: strawberry.ID
     quantity: int
     unit_price: float
 
 
-@strawberry.type
+@strawberry.type(description='Promo Price is discount for item in current date')
 class PromoPrice:
     id: strawberry.ID
     promo_code: str
@@ -27,7 +27,7 @@ class PromoPrice:
     unit_price: float
 
 
-@strawberry.type(name='Item')
+@strawberry.type(name='Item', description='Item attributes')
 class ItemType:
     id: strawberry.ID
     code: str
@@ -105,7 +105,7 @@ class ItemType:
 
 @strawberry.type
 class Query():
-    @strawberry.field
+    @strawberry.field(description='to look up for item price using barcode')
     def plu(self, barcode: str, info: Info) -> ItemType:
         session: Session = info.context['session']
         item: Optional[Item] = session.execute(
@@ -139,7 +139,7 @@ class Query():
             discounted_price=item.HargaJual,
         )
 
-    @strawberry.field
+    @strawberry.field(description='to look up for item price using item id')
     def item(self, id: strawberry.ID, info: Info) -> ItemType:
         session: Session = info.context['session']
         item: Optional[Item] = session.execute(
