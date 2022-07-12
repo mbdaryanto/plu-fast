@@ -1,6 +1,7 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client'
 import Plu from './Plu'
+import ErrorBoundary from './components/ErrorBoundary'
 
 
 const client = new ApolloClient({
@@ -14,11 +15,13 @@ const client = new ApolloClient({
 
 function App() {
   return (
-    <ChakraProvider>
-      <ApolloProvider client={client}>
-        <Plu/>
-      </ApolloProvider>
-    </ChakraProvider>
+    <ErrorBoundary>
+      <ChakraProvider>
+        <ApolloProvider client={client}>
+          <Plu/>
+        </ApolloProvider>
+      </ChakraProvider>
+    </ErrorBoundary>
   )
 }
 

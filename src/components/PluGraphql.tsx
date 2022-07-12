@@ -87,10 +87,10 @@ const promoTheme = {
 function PluGraphql({ barcode }: {
   barcode: string
 }) {
-  // using 5s pollInterval to refresh data
   const { data, error, loading, refetch } = useQuery<PluType, PluArgsType>(GET_PLU, {
     variables: { barcode },
-    pollInterval: 5000,
+    // using 5s pollInterval to refresh data
+    pollInterval: 1000,
   })
 
   if (loading) return (
