@@ -1,3 +1,4 @@
+from typing import Union
 import pathlib
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -35,7 +36,7 @@ app.add_middleware(
 )
 
 @app.get('/')
-async def index() -> str:
+async def index() -> Union[FileResponse, str]:
     index_path = public_path / 'index.html'
     if index_path.exists():
         return FileResponse(index_path)
@@ -43,5 +44,5 @@ async def index() -> str:
 
 
 @app.get('/info')
-async def index() -> str:
+async def info() -> str:
     return get_program_name()

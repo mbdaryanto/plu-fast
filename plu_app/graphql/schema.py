@@ -3,8 +3,9 @@ from typing import Optional, List
 import strawberry
 from strawberry.types import Info
 from sqlalchemy import select, desc, and_, or_
+from sqlalchemy.orm import Session
 
-from ..db import Session
+# from ..db import Session
 from ..schema import Item, ItemHarga, ItemHargaD, ItemHargaGrosir
 
 
@@ -53,7 +54,7 @@ class ItemType:
 
         return [
             BulkPrice(
-                id=strawberry.ID(row.IDItemHargaGrosir),
+                id=strawberry.ID(str(row.IDItemHargaGrosir)),
                 quantity=int(row.Jumlah),
                 unit_price=row.Harga,
             )
@@ -90,7 +91,7 @@ class ItemType:
 
         return [
             PromoPrice(
-                id=strawberry.ID(row.IDItemHargaD),
+                id=strawberry.ID(str(row.IDItemHargaD)),
                 promo_code=row.Kode,
                 promo_name=row.Nama,
                 start=row.TanggalAwal,
