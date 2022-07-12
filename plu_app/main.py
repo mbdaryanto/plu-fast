@@ -1,4 +1,7 @@
+import pathlib
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from .version import get_version, get_program_name
 from .routers import item, graphql
@@ -9,6 +12,11 @@ app = FastAPI(
     description="Price Look Up Web Application",
     version=get_version(),
 )
+
+# mount public static assets
+public_path = pathlib.Path(__file__).parent / 'public'
+assets_path = public_path / 'assets'
+app.mount("/assets", StaticFiles(directory=assets_path), name="assets")
 
 app.include_router(item.router)
 app.include_router(graphql.router, prefix="/graphql")
@@ -28,6 +36,9 @@ app.add_middleware(
 
 @app.get('/')
 async def index() -> str:
+    index_path = public_path / 'index.html'
+    if index_path.exists():
+        return FileResponse(index_path)
     return get_program_name()
 
 

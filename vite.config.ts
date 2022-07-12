@@ -10,5 +10,8 @@ export default defineConfig({
       '/graphql': 'http://127.0.0.1:8000',
     },
   },
-  plugins: [react()]
+  plugins: [react()],
+  build: {
+    outDir: 'plu_app/public'
+  },
 })
