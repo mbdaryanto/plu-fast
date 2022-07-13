@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Input, Button, FormControl, FormErrorMessage, Center,
   VStack, HStack, Box, Heading, Image } from '@chakra-ui/react'
 import { Formik, Form, Field, FieldProps } from 'formik'
@@ -13,6 +13,23 @@ function PluPage() {
   // const [plu, setPlu] = useState<PluResponseType>()
   const txtCodeRef = useRef<HTMLInputElement>(null)
   // const toast = useToast()
+
+  useEffect(() => {
+    // barcode reader sends ctrl+J after scanning barcode
+    // prevent browser to open download dialog
+    const cancelCtrlJ = (ev: KeyboardEvent) => {
+      if (ev.ctrlKey && (ev.key === 'J' || ev.key === 'j')) {
+        ev.preventDefault()
+        ev.stopPropagation()
+      }
+    }
+    // register keydown
+    window.addEventListener('keydown', cancelCtrlJ)
+    return () => {
+      // unregister on page unmount
+      window.removeEventListener('keydown', cancelCtrlJ)
+    }
+  }, [])
 
   return (
     <Center minH="100vh">
