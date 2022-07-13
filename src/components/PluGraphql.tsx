@@ -89,8 +89,10 @@ function PluGraphql({ barcode }: {
 }) {
   const { data, error, loading, refetch } = useQuery<PluType, PluArgsType>(GET_PLU, {
     variables: { barcode },
-    // using 5s pollInterval to refresh data
-    pollInterval: 1000,
+    // using 1s pollInterval to refresh data
+    // pollInterval: 1000,
+    // read from cache first then update from network
+    fetchPolicy: 'cache-and-network'
   })
 
   if (loading) return (
