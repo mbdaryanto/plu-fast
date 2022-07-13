@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Dict, Any
 import pathlib
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -6,12 +6,22 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from .version import get_version, get_program_name
 from .routers import item, graphql
+from .settings import is_dev_mode
 
+fast_api_kwargs: Dict[str, Any] = {}
+
+if not is_dev_mode():
+    # disable /docs and /redoc if not in development mode
+    fast_api_kwargs.update(
+        docs_url=None,
+        redoc_url=None,
+    )
 
 app = FastAPI(
     title="PLU App",
     description="Price Look Up Web Application",
     version=get_version(),
+    **fast_api_kwargs,
 )
 
 # mount public static assets

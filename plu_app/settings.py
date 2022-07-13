@@ -1,9 +1,10 @@
-from typing import Optional
-from pathlib import Path
 from functools import lru_cache
-from pydantic import BaseSettings
+from os import getenv
+from pathlib import Path
+from typing import Optional
+
 from cryptography.fernet import Fernet
-from sqlalchemy import create_engine
+from pydantic import BaseSettings
 from sqlalchemy.engine import URL
 
 
@@ -57,3 +58,12 @@ class Settings(BaseSettings):
 @lru_cache()
 def get_settings() -> Settings:
     return Settings()
+
+
+def is_dev_mode() -> bool:
+    """
+    returns True if in development mode
+    """
+    if 'dev' in getenv('MODE', '').lower():
+        return True
+    return False
