@@ -45,7 +45,7 @@ untuk uji coba sementara bisa menggunakan uvicorn dengan port misal 8081, asumsi
 
 keluar dari shell ssh dengan <kbd>Enter</kbd> x2 lalu jalankan uvicorn di port tersebut
 
-    (venv) $ uvicorn petra_gl.main:app --host 0.0.0.0 --port 1081
+    (venv) $ uvicorn plu_app.main:app --host 0.0.0.0 --port 1081
 
 test di browser dengan http://localhost:1081/
 
@@ -53,7 +53,7 @@ buat file configuration supervisor di `/etc/supervisor/conf.d/`, untuk listen ke
 
     cat << EOF | sudo tee /etc/supervisor/conf.d/plu.conf
     [program:plu]
-    command=/home/it/Projects/plu/venv/bin/gunicorn plu_appl.main:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80
+    command=/home/it/Projects/plu/venv/bin/gunicorn plu_app.main:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:80
     user=root
     EOF
 
