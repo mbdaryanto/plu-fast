@@ -5,7 +5,7 @@ pymysql
 cryptography
 python-dotenv
 rich
-'strawberry-graphql[fastapi]'
+strawberry-graphql[fastapi]
 SQLAlchemy>=1.4
 python-multipart
 python-jose
