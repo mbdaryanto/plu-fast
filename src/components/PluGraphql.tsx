@@ -123,20 +123,20 @@ function PluGraphql({ barcode }: {
           <LabelValue label="Barcode" value={data!.plu.barcode} {...normalTheme}/>
         </GridItem>
         <GridItem colSpan={2}>
-          <LabelValue label="Nama" value={data!.plu.name} {...normalTheme}/>
+          <LabelValue label="Nama" value={data!.plu.name} fontSize="4xl" {...normalTheme}/>
         </GridItem>
         <GridItem colSpan={2}>
           <LabelValue
             label="Harga"
-            fontSize="xx-large"
+            fontSize="4xl"
             textAlign="center"
             {...normalTheme}
             value={(
               <Fragment>
-                <Text as="span" textColor="red.200">
-                  <del>{nf.format(data!.plu.normalPrice)}</del>
+                <Text as="span" textColor="red.200" fontSize="md">
+                  <del>{`Rp `}{nf.format(data!.plu.normalPrice)}</del>
                 </Text>
-                {' '}
+                {' Rp '}
                 {nf.format(data!.plu.discountedPrice)}
               </Fragment>
             )}
@@ -152,12 +152,8 @@ function PluGraphql({ barcode }: {
                 <LabelValue label="Jumlah" textAlign="right" value={nf.format(row.quantity)} {...grosirTheme}/>
               </GridItem>
               <GridItem>
-                <LabelValue label="Harga Satuan" textAlign="right" value={nf.format(row.unitPrice)} {...grosirTheme}/>
+                <LabelValue label="Harga Satuan" textAlign="right" value={`Rp ${nf.format(row.unitPrice)}`} {...grosirTheme}/>
               </GridItem>
-              {/* if you want to show IsDos field use 60px at the end of templateColumns */}
-              {/* <GridItem pt="21px" display="flex" alignItems="center" justifyContent="center">
-                {row.IsDos === 'Ya' && (<FaBox/>)}
-              </GridItem> */}
             </Fragment>
           ))}
         </Grid>

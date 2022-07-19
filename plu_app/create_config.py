@@ -39,6 +39,9 @@ def create_config():
         except OperationalError:
             print('Connection failed!')
 
+    settings.app_title = Prompt.ask('nama perusahaan', console=console, default=settings.app_title)
+    settings.app_subtitle = Prompt.ask('baris 2', console=console, default=settings.app_subtitle)
+
     console.print('Create settings and save to: {}'.format(settings.Config.env_file))
     settings.save()
 

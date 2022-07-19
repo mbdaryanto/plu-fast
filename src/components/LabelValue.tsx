@@ -2,7 +2,7 @@ import { Box, Text, VStack } from '@chakra-ui/react'
 import { ComponentProps, ReactNode } from 'react'
 
 
-const LabelValue = ({ label, value, fontSize, textAlign, labeltextColor,valueBgColor }: {
+const LabelValue = ({ label, value, fontSize, textAlign, labeltextColor, valueBgColor }: {
   label: string
   value: ReactNode
   fontSize?: ComponentProps<typeof Text>['fontSize']

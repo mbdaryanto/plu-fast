@@ -16,7 +16,10 @@ class Settings(BaseSettings):
     db_user: str = 'user'
     db_password: Optional[str] = None
 
-    log_file: str = str(Path(__file__).parent.parent / '.plu_app.log')
+    log_file: str = str(Path(__file__).parent / '.plu_app.log')
+
+    app_title: str = 'Cek Harga'
+    app_subtitle: str = ''
 
     class Config:
         env_file = str(Path(__file__).parent / '.env')

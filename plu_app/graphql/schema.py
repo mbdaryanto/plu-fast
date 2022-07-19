@@ -1,12 +1,16 @@
+import logging
 from datetime import date
 from typing import Optional, List
 import strawberry
 from strawberry.types import Info
 from sqlalchemy import select, desc, and_, or_
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import OperationalError
 
 # from ..db import Session
 from ..schema import Item, ItemHarga, ItemHargaD, ItemHargaGrosir
+from ..settings import get_settings
+from ..version import get_version
 
 
 @strawberry.type(description='Bulk Price is the unit price on item with quantity')
@@ -104,22 +108,43 @@ class ItemType:
         ]
 
 
+@strawberry.type(description='Provide global values')
+class Globals:
+    app_title: str
+    app_subtitle: str
+    version: str
+
+
 @strawberry.type
 class Query():
     @strawberry.field(description='to look up for item price using barcode')
     def plu(self, barcode: str, info: Info) -> ItemType:
         session: Session = info.context['session']
-        item: Optional[Item] = session.execute(
-            select(Item).where(
-                or_(
-                    Item.Kode == barcode,
-                    Item.Barcode == barcode,
-                ),
-            ).order_by(
-                # diprioritaskan yang barcode-nya sama
-                desc(Item.Barcode == barcode)
-            ).limit(1)
-        ).scalar_one_or_none()
+
+        try:
+            item: Optional[Item] = session.execute(
+                select(Item).where(
+                    or_(
+                        Item.Kode == barcode,
+                        Item.Barcode == barcode,
+                    ),
+                ).order_by(
+                    # diprioritaskan yang barcode-nya sama
+                    desc(Item.Barcode == barcode)
+                ).limit(1)
+            ).scalar_one_or_none()
+
+        except OperationalError as err:
+            logging.exception("Error query plu")
+            raise ValueError(
+                "Error di server, mohon coba beberapa saat lagi"
+            )
+
+        except Exception:
+            logging.exception("Error query plu")
+            raise ValueError(
+                "Error di server, mohon coba beberapa saat lagi"
+            )
 
         if item is None:
             raise ValueError(
@@ -166,6 +191,14 @@ class Query():
             name=item.Nama,
             normal_price=item.HargaNormal,
             discounted_price=item.HargaJual,
+        )
+
+    @strawberry.field(description='get globals var')
+    def globals(self) -> Globals:
+        return Globals(
+            app_title=get_settings().app_title,
+            app_subtitle=get_settings().app_subtitle,
+            version=get_version(),
         )
 
 schema = strawberry.Schema(query=Query)

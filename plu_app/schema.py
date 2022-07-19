@@ -108,7 +108,7 @@ class Item(Base):
     sa.Index('Idx_RefIDItem', 'RefID')
     sa.Index('Idx_UrutanProduksi', 'UrutanProduksi')
 
-    ItemTree = relationship('ItemTree', backref='Items')
+    item_tree: ItemTree = relationship('ItemTree', backref='items')
 
 
 class ItemHargaGrosir(Base):
@@ -122,7 +122,7 @@ class ItemHargaGrosir(Base):
     IsTampilPrint = sa.Column(sa.Enum('Ya', 'Tidak'), server_default='Ya')
     Aktif = sa.Column(sa.Enum('Ya', 'Tidak'), nullable=False, server_default='Ya')
 
-    Item = relationship('Item', backref='ItemHargaGrosirs')
+    item: Item = relationship('Item', backref='item_harga_grosirs')
 
 
 class ItemHargaD(Base):
@@ -136,5 +136,5 @@ class ItemHargaD(Base):
     Diskon = sa.Column(sa.Float, server_default='0')
     Aktif = sa.Column(sa.Enum('Ya', 'Tidak'), nullable=False, server_default='Ya')
 
-    ItemHarga = relationship('ItemHarga', backref='ItemHargaDs')
-    Item = relationship('Item', backref='ItemHargaDs')
+    item_harga: ItemHarga = relationship('ItemHarga', backref='item_harga_ds')
+    item: Item = relationship('Item', backref='item_harga_ds')
